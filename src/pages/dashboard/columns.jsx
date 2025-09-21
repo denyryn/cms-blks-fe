@@ -1,13 +1,7 @@
-import { Circle, EllipsisVertical } from "lucide-react";
+import { Circle, Edit, EllipsisVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { DataModal } from "@/components/data-example-modal";
 
 import { Button } from "@/components/ui/button";
 
@@ -45,27 +39,17 @@ export const columns = [
   },
   {
     id: "actions",
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <EllipsisVertical />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>View</DropdownMenuItem>
-            <DropdownMenuItem>Update</DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+    cell: ({ row }) => {
+      const formData = row.original;
+
+      function editTrigger() {
+        return (
+          <Button variant="ghost">
+            <Edit className="size-4" />
+          </Button>
+        );
+      }
+      return <DataModal initial={formData} trigger={editTrigger()} />;
     },
   },
 ];
