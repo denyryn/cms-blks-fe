@@ -1,0 +1,27 @@
+import config from "./config";
+
+export class Fetcher {
+  constructor(baseUrl = config.apiUrl) {
+    this.baseUrl = baseUrl;
+  }
+
+  static async csrf() {
+    await fetch(`${config.apiUrl}/sanctum/csrf-cookie`, {
+      method: "GET",
+      credentials: "include",
+    });
+  }
+
+  static async fetch(url, options = {}) {
+    const response = await fetch(`${config.apiUrl}${url}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+      },
+      credentials: "include",
+    });
+    const data = await response.json();
+    return { response, data };
+  }
+}
