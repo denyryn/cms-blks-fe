@@ -13,6 +13,10 @@ let publicRoutes = [
     Component: AuthLayout,
     children: [
       {
+        index: true,
+        navigator: "/auth/login",
+      },
+      {
         path: "login",
         Component: LoginPage,
       },

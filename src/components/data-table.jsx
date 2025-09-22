@@ -15,51 +15,71 @@ import {
 } from "@/components/ui/table";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
-export function DataTable({ columns, data }) {
+export function DataTable({ columns, data, isLoading = false, pageSize = 10 }) {
   const table = useReactTable({
-    data,
+    data: data ?? [], // fall back to empty array while loading
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize } },
   });
+
+  // Skeleton rows
+  const skeletonRows = Array.from({ length: pageSize }).map((_, i) => (
+    <TableRow key={`skeleton-${i}`}>
+      {columns.map((_, j) => (
+        <TableCell key={j}>
+          <Skeleton className="h-5 w-full" />
+        </TableCell>
+      ))}
+    </TableRow>
+  ));
 
   return (
     <div className="w-full">
-      {/* Table */}
-      <div className="overflow-hidden rounded-md border">
+      {/* Card wrapper */}
+      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <Table>
-          <TableHeader className="bg-muted sticky top-0 z-10">
+          {/* Sticky header */}
+          <TableHeader className="bg-muted/30 sticky top-0 z-10 backdrop-blur">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className="whitespace-nowrap font-medium"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className="whitespace-nowrap px-6 py-4 text-left font-semibold"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="**:data-[slot=table-cell]:first:w-8">
-            {table.getRowModel().rows?.length ? (
+
+          <TableBody>
+            {isLoading ? (
+              skeletonRows
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="transition-colors hover:bg-muted/30"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className="px-6 py-1.5 text-sm text-muted-foreground"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -72,7 +92,7 @@ export function DataTable({ columns, data }) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-40 text-center text-sm text-muted-foreground"
                 >
                   No results.
                 </TableCell>
@@ -82,8 +102,13 @@ export function DataTable({ columns, data }) {
         </Table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {/* Pagination bar */}
+      <div
+        className={cn(
+          "flex items-center justify-end gap-2 pt-4",
+          isLoading && "invisible" // hide while loading
+        )}
+      >
         <Button
           variant="outline"
           size="sm"

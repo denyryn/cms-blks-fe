@@ -1,14 +1,20 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
 import { SectionCards } from "@/components/section-cards";
-import { DataModal } from "@/components/data-example-modal";
+import { CategoryModal } from "@/components/data-category-modal";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useMemo } from "react";
 
 import { columns } from "./columns";
-import data from "./data.json";
+import { useCategories } from "@/hooks/use-categories";
 
 export default function HomePage() {
+  const { data, loading, error, pagination, setPagination, refreshData } =
+    useCategories(0, 15);
+
+  const memoizedColumns = useMemo(() => columns(refreshData), [refreshData]);
+
   function addTrigger() {
     return (
       <Button variant="outline" className="w-12">
@@ -24,8 +30,17 @@ export default function HomePage() {
         <ChartAreaInteractive />
       </div> */}
       <section className="p-6 gap-y-4 flex flex-col items-end">
-        <DataModal initial="" trigger={addTrigger()} />
-        <DataTable columns={columns} data={data} />
+        <CategoryModal
+          initial=""
+          trigger={addTrigger()}
+          onSuccess={refreshData}
+        />
+        <DataTable
+          columns={memoizedColumns}
+          pageSize={15}
+          data={data}
+          isLoading={loading}
+        />
       </section>
     </div>
   );

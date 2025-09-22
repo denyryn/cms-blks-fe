@@ -1,4 +1,4 @@
-import { Fetcher } from "@/lib/fetcher";
+import Fetcher from "@/lib/fetcher";
 
 export async function register({ email, password, password_confirmation }) {
   // Get CSRF cookie
@@ -19,5 +19,19 @@ export async function login({ email, password }) {
   return Fetcher.fetch("/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function logout() {
+  return Fetcher.fetch("/auth/logout", {
+    credentials: "include",
+    method: "POST",
+  });
+}
+
+export async function check() {
+  return Fetcher.fetch("/auth/user", {
+    credentials: "include",
+    method: "GET",
   });
 }

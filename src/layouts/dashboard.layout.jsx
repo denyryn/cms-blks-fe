@@ -2,9 +2,15 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
+
+import { useAuth } from "@/hooks/use-auth";
 
 export default function DashboardLayout() {
+  const { isAdmin } = useAuth();
+
+  if (!isAdmin) return <Navigate to="/auth/login" replace />;
+
   return (
     <SidebarProvider
       style={{

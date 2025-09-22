@@ -1,6 +1,6 @@
 import config from "./config";
 
-export class Fetcher {
+export default class Fetcher {
   constructor(baseUrl = config.apiUrl) {
     this.baseUrl = baseUrl;
   }
