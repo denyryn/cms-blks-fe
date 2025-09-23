@@ -5,7 +5,7 @@ export async function register({ email, password, password_confirmation }) {
   await Fetcher.csrf();
 
   // Register
-  return Fetcher.fetch("/auth/register", {
+  return Fetcher.fetch("/api/auth/register", {
     method: "POST",
     body: JSON.stringify({ email, password, password_confirmation }),
   });
@@ -16,21 +16,21 @@ export async function login({ email, password }) {
   await Fetcher.csrf();
 
   // Login
-  return Fetcher.fetch("/auth/login", {
+  return Fetcher.fetch("/api/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
 }
 
 export async function logout() {
-  return Fetcher.fetch("/auth/logout", {
+  return Fetcher.fetch("/api/auth/logout", {
     credentials: "include",
     method: "POST",
   });
 }
 
 export async function check() {
-  return Fetcher.fetch("/auth/user", {
+  return Fetcher.fetch("/api/auth/me", {
     credentials: "include",
     method: "GET",
   });

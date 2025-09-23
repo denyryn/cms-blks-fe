@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { getCategories } from "@/api-services/category.service";
+import { getProducts } from "@/api-services/products.service";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
-export function useCategories(initialPageIndex = 0, initialPageSize = 15) {
+export function useProducts(initialPageIndex = 0, initialPageSize = 15) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,13 +12,13 @@ export function useCategories(initialPageIndex = 0, initialPageSize = 15) {
     pageCount: -1, // -1 indicates unknown page count initially
   });
 
-  // stable imperative fetcher
   const fetchData = useCallback(async (currentPagination, silent = false) => {
     setLoading(true);
     setError(null);
 
     try {
-      const { response, data: payload } = await getCategories({
+      // Convert 0-based pageIndex to 1-based page for API
+      const { response, data: payload } = await getProducts({
         page: currentPagination.pageIndex + 1,
         perPage: currentPagination.pageSize,
       });
@@ -41,31 +41,28 @@ export function useCategories(initialPageIndex = 0, initialPageSize = 15) {
       });
 
       if (!silent && payload?.message) toast.success(payload.message);
-    } catch {
+    } catch (err) {
       const msg = "Unexpected error.";
       setError(msg);
       if (!silent) toast.error(msg);
     } finally {
       setLoading(false);
     }
-  }, []); // ← intentionally empty: we’ll pass page via ref
+  }, []);
 
-  // keep latest pagination in a ref so fetchData always sees it
   const pageRef = useRef(pagination);
   useEffect(() => {
     pageRef.current = pagination;
   }, [pagination]);
 
-  // wrapper that uses the ref
   const fetchLatest = useCallback(
-    (silent) => fetchData(pageRef.current, silent),
+    (silent = false) => fetchData(pageRef.current, silent),
     [fetchData]
   );
 
-  // auto-fetch when page changes
   useEffect(() => {
     fetchLatest();
-  }, [pagination.pageIndex, pagination.pageSize]); // only primitives
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   const refreshData = useCallback(() => fetchLatest(true), [fetchLatest]);
 

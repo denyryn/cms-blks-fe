@@ -4,12 +4,12 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import { Navigate, Outlet } from "react-router";
 
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/auth.context";
 
 export default function DashboardLayout() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, loading } = useAuth();
 
-  if (!isAdmin) return <Navigate to="/auth/login" replace />;
+  if (!isAdmin && !loading) return <Navigate to="/auth/login" replace />;
 
   return (
     <SidebarProvider

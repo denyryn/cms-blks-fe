@@ -1,7 +1,8 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
+import { Pagination } from "@/components/pagination";
 import { SectionCards } from "@/components/section-cards";
-import { CategoryModal } from "@/components/data-category-modal";
+import { CategoryModal } from "@/components/category/data-category-modal";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useMemo } from "react";
@@ -9,11 +10,15 @@ import { useMemo } from "react";
 import { columns } from "./columns";
 import { useCategories } from "@/hooks/use-categories";
 
-export default function HomePage() {
+export default function CategoryPage() {
   const { data, loading, error, pagination, setPagination, refreshData } =
     useCategories(0, 15);
 
   const memoizedColumns = useMemo(() => columns(refreshData), [refreshData]);
+
+  const handlePageChange = (page) => {
+    setPagination(page);
+  };
 
   function addTrigger() {
     return (
@@ -35,12 +40,17 @@ export default function HomePage() {
           trigger={addTrigger()}
           onSuccess={refreshData}
         />
+
         <DataTable
           columns={memoizedColumns}
-          pageSize={15}
           data={data}
+          pagination={pagination}
           isLoading={loading}
         />
+
+        <div>
+          <Pagination pagination={pagination} onPageChange={handlePageChange} />
+        </div>
       </section>
     </div>
   );

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from "react-router";
 import {
   IconCamera,
   IconChartBar,
@@ -32,6 +33,8 @@ import {
 } from "@/components/ui/sidebar";
 
 import config from "@/lib/config";
+import { ChartColumnStacked, LibraryBig } from "lucide-react";
+import { useAuth } from "@/contexts/auth.context";
 
 const data = {
   user: {
@@ -131,26 +134,23 @@ const data = {
       icon: IconSearch,
     },
   ],
-  documents: [
+  dataManagements: [
     {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
+      name: "Category",
+      url: "/dashboard/category",
+      icon: ChartColumnStacked,
     },
     {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
+      name: "Products",
+      url: "/dashboard/product",
+      icon: LibraryBig,
     },
   ],
 };
 
 export function AppSidebar({ ...props }) {
+  const { user, loading, logout } = useAuth();
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -160,23 +160,23 @@ export function AppSidebar({ ...props }) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link to="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">
                   {config.appName}
                 </span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavDocuments items={data.dataManagements} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} loading={loading} logout={logout} />
       </SidebarFooter>
     </Sidebar>
   );

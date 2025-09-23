@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/auth.context";
 import { Outlet, Navigate } from "react-router";
 
 export default function AuthLayout() {

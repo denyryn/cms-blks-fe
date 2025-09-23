@@ -47,8 +47,8 @@ export function CategoryModal({ initial, trigger, onSuccess }) {
       return;
     }
 
-    setOpen(false);
     onSuccess?.();
+    setOpen(false);
     toast.success(data?.message || "Operation successful!");
   }
 

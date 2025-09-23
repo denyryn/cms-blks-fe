@@ -1,5 +1,6 @@
 import DashboardLayout from "@/layouts/dashboard.layout";
-import HomePage from "@/pages/dashboard/home";
+import CategoryPage from "@/pages/dashboard/category/page";
+import ProductPage from "@/pages/dashboard/product/page";
 
 let adminRoutes = [
   {
@@ -7,8 +8,12 @@ let adminRoutes = [
     Component: DashboardLayout,
     children: [
       {
-        index: true,
-        Component: HomePage,
+        path: "category",
+        Component: CategoryPage,
+      },
+      {
+        path: "product",
+        Component: ProductPage,
       },
     ],
   },

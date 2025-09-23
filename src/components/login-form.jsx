@@ -6,10 +6,13 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import config from "@/lib/config";
 import { toast } from "sonner";
-import { login } from "@/api-services/auth.service";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
+import { useAuth } from "@/contexts/auth.context";
+import { Loader } from "lucide-react";
 
 export function LoginForm({ className, ...props }) {
+  const { busy, user, isAdmin, login } = useAuth();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,17 +25,11 @@ export function LoginForm({ className, ...props }) {
 
   const formSubmit = async (e) => {
     e.preventDefault();
-    const { response, data } = await login(formData);
-
-    if (!response.ok) {
-      // Registration failed
-      toast.error(data.message || "Registration failed. Please try again.");
-      return;
-    }
-
-    // Registration successful
-    toast.success(data.message || "Registration successful!");
+    await login(formData);
   };
+
+  const buttonContent = () =>
+    busy ? <Loader className="animate-spin" /> : <span>Login</span>;
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -61,12 +58,12 @@ export function LoginForm({ className, ...props }) {
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
+                  <Link
+                    to="#"
                     className="ml-auto text-sm underline-offset-2 hover:underline"
                   >
                     Forgot your password?
-                  </a>
+                  </Link>
                 </div>
                 <Input
                   id="password"
@@ -77,8 +74,8 @@ export function LoginForm({ className, ...props }) {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Login
+              <Button type="submit" className="w-full" disabled={busy}>
+                {buttonContent()}
               </Button>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
@@ -117,8 +114,9 @@ export function LoginForm({ className, ...props }) {
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        By clicking continue, you agree to our{" "}
+        <Link to="#">Terms of Service</Link> and{" "}
+        <Link to="#">Privacy Policy</Link>.
       </div>
     </div>
   );
