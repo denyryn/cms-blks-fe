@@ -13,6 +13,7 @@ import {
   IconInnerShadowTop,
   IconListDetails,
   IconReport,
+  IconRobot,
   IconSearch,
   IconSettings,
   IconUsers,
@@ -45,28 +46,8 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard/home",
       icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
     },
   ],
   navClouds: [
@@ -161,7 +142,7 @@ export function AppSidebar({ ...props }) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link to="/dashboard">
-                <IconInnerShadowTop className="!size-5" />
+                <IconRobot className="!size-5" />
                 <span className="text-base font-semibold">
                   {config.appName}
                 </span>

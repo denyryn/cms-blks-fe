@@ -1,7 +1,7 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
 import { Pagination } from "@/components/pagination";
-import { SectionCards } from "@/components/section-cards";
+import { ProductCards } from "@/components/statistic-cards/product-cards";
 import { CategoryModal } from "@/components/category/data-category-modal";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -28,10 +28,7 @@ export default function ProductPage() {
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-      {/* <SectionCards />
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
-      </div> */}
+      <ProductCards />
 
       <section className="p-6 gap-y-4 flex flex-col items-end">
         <CategoryModal

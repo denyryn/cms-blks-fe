@@ -1,5 +1,5 @@
 import AuthLayout from "@/layouts/auth.layout";
-import Home from "@/pages/home";
+import Home from "@/pages/dashboard/home/page";
 import LoginPage from "@/pages/auth/login";
 import RegisterPage from "@/pages/auth/register";
 
