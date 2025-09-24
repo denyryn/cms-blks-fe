@@ -12,11 +12,11 @@ export default class Fetcher {
     });
   }
 
-  static async fetch(url, options = {}) {
+  static async fetch(url, options = {}, isJSON = true) {
     const response = await fetch(`${config.apiUrl}${url}`, {
       ...options,
       headers: {
-        "Content-Type": "application/json",
+        ...(isJSON ? { "Content-Type": "application/json" } : {}),
         ...(options.headers || {}),
       },
       credentials: "include",

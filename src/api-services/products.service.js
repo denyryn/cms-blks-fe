@@ -16,15 +16,25 @@ export async function createProduct({
   category_id,
   name,
   description,
-  image_url,
+  image,
   price,
 }) {
   // Get CSRF cookie
   await Fetcher.csrf();
-  return Fetcher.fetch("/api/admin/products", {
-    method: "POST",
-    body: JSON.stringify({ category_id, name, description, image_url, price }),
-  });
+  const form = new FormData();
+  form.append("category_id", category_id);
+  form.append("name", name);
+  form.append("description", description);
+  form.append("image", image);
+  form.append("price", price);
+  return Fetcher.fetch(
+    "/api/admin/products",
+    {
+      method: "POST",
+      body: form,
+    },
+    false
+  );
 }
 
 export async function updateProduct({
@@ -32,15 +42,26 @@ export async function updateProduct({
   category_id,
   name,
   description,
-  image_url,
+  image,
   price,
 }) {
   // Get CSRF cookie
   await Fetcher.csrf();
-  return Fetcher.fetch(`/api/admin/products/${id}`, {
-    method: "PUT",
-    body: JSON.stringify({ category_id, name, description, image_url, price }),
-  });
+  const form = new FormData();
+  form.append("_method", "PUT");
+  form.append("category_id", category_id);
+  form.append("name", name);
+  form.append("description", description);
+  form.append("image", image);
+  form.append("price", price);
+  return Fetcher.fetch(
+    `/api/admin/products/${id}`,
+    {
+      method: "POST",
+      body: form,
+    },
+    false
+  );
 }
 
 export async function deleteProduct(id) {

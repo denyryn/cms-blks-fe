@@ -4,6 +4,7 @@ import HomePage from "@/pages/dashboard/home/page";
 import CategoryPage from "@/pages/dashboard/category/page";
 import ProductPage from "@/pages/dashboard/product/page";
 import ProductEditCreatePage from "@/pages/dashboard/product/edit-create/page";
+import OrderPage from "@/pages/dashboard/order/page";
 
 let adminRoutes = [
   {
@@ -27,8 +28,16 @@ let adminRoutes = [
         Component: ProductPage,
       },
       {
-        path: "product/edit-create",
+        path: "product/create",
         Component: ProductEditCreatePage,
+      },
+      {
+        path: "product/edit/:id",
+        Component: ProductEditCreatePage,
+      },
+      {
+        path: "order",
+        Component: OrderPage,
       },
     ],
   },

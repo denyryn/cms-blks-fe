@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import config from "@/lib/config";
-import { ChartColumnStacked, LibraryBig } from "lucide-react";
+import { ChartColumnStacked, LibraryBig, Receipt } from "lucide-react";
 import { useAuth } from "@/contexts/auth.context";
 
 const data = {
@@ -48,54 +48,6 @@ const data = {
       title: "Dashboard",
       url: "/dashboard/home",
       icon: IconDashboard,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
@@ -125,6 +77,11 @@ const data = {
       name: "Products",
       url: "/dashboard/product",
       icon: LibraryBig,
+    },
+    {
+      name: "Orders",
+      url: "/dashboard/order",
+      icon: Receipt,
     },
   ],
 };

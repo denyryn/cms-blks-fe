@@ -10,7 +10,7 @@ export default function App() {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <AuthProvider>
           <RouterProvider router={router} />
-          <Toaster position="bottom-right" />
+          <Toaster position="top-right" />
         </AuthProvider>
       </ThemeProvider>
     </>

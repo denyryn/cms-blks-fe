@@ -7,16 +7,24 @@ import { useNavigate } from "react-router";
 
 export const columns = (onDataChange) => [
   {
-    accessorKey: "name",
-    header: "Name",
+    accessorKey: "user.name",
+    header: "User's Name",
   },
   {
-    accessorKey: "category.name",
-    header: "Category",
+    accessorKey: "user.email",
+    header: "Email",
   },
   {
-    accessorKey: "price",
-    header: "Price",
+    accessorKey: "total_price",
+    header: "Total Price",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "shipping_address",
+    header: "Shipping Address",
   },
   {
     id: "actions",
