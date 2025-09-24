@@ -41,3 +41,10 @@ export async function getRevenueStats() {
     method: "GET",
   });
 }
+
+export async function getGuestMessageStats() {
+  return Fetcher.fetch("/api/admin/statistics/guest-messages", {
+    credentials: "include",
+    method: "GET",
+  });
+}

@@ -20,6 +20,8 @@ export function useStatistics({ type = "overview" }) {
         return stats.getOrderStats;
       case "revenue":
         return stats.getRevenueStats;
+      case "guest-messages":
+        return stats.getGuestMessageStats;
       default:
         return stats.getOverviewStats;
     }

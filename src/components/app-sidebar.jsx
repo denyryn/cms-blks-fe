@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import config from "@/lib/config";
-import { ChartColumnStacked, LibraryBig, Receipt } from "lucide-react";
+import { ChartColumnStacked, LibraryBig, Mail, Receipt } from "lucide-react";
 import { useAuth } from "@/contexts/auth.context";
 
 const data = {
@@ -82,6 +82,11 @@ const data = {
       name: "Orders",
       url: "/dashboard/order",
       icon: Receipt,
+    },
+    {
+      name: "Guest Messages",
+      url: "/dashboard/guest-message",
+      icon: Mail,
     },
   ],
 };

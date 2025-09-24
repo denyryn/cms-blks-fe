@@ -5,12 +5,14 @@ import CategoryPage from "@/pages/dashboard/category/page";
 import ProductPage from "@/pages/dashboard/product/page";
 import ProductEditCreatePage from "@/pages/dashboard/product/edit-create/page";
 import OrderPage from "@/pages/dashboard/order/page";
+import GuestMessagePage from "@/pages/dashboard/guest-message/page";
 
 let adminRoutes = [
   {
     path: "/dashboard",
     Component: DashboardLayout,
     children: [
+      // Default route for dashboard
       {
         index: true,
         element: <Navigate to="home" />,
@@ -19,10 +21,14 @@ let adminRoutes = [
         path: "home",
         Component: HomePage,
       },
+
+      // Category
       {
         path: "category",
         Component: CategoryPage,
       },
+
+      // Product
       {
         path: "product",
         Component: ProductPage,
@@ -35,9 +41,17 @@ let adminRoutes = [
         path: "product/edit/:id",
         Component: ProductEditCreatePage,
       },
+
+      // Order
       {
         path: "order",
         Component: OrderPage,
+      },
+
+      // Guest Message
+      {
+        path: "guest-message",
+        Component: GuestMessagePage,
       },
     ],
   },
