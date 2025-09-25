@@ -1,7 +1,22 @@
 import Fetcher from "@/lib/fetcher";
 
-export async function getProducts({ page = 1, perPage = 10 }) {
-  return Fetcher.fetch(`/api/products?page=${page}&per_page=${perPage}`, {
+export async function getProducts({
+  page = 1,
+  perPage = 10,
+  sort,
+  category_id,
+}) {
+  let url = `/api/products?page=${page}&per_page=${perPage}`;
+
+  if (sort) {
+    url += `&sort=${sort}`;
+  }
+
+  if (category_id && category_id !== "all") {
+    url += `&category_id=${category_id}`;
+  }
+
+  return Fetcher.fetch(url, {
     method: "GET",
   });
 }

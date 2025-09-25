@@ -1,75 +1,80 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { getOrders } from "@/api-services/orders.service";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 export function useOrders(initialPageIndex = 0, initialPageSize = 15) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
     pageIndex: initialPageIndex,
     pageSize: initialPageSize,
     pageCount: -1, // -1 indicates unknown page count initially
   });
 
-  // stable imperative fetcher
-  const fetchData = useCallback(async (currentPagination, silent = false) => {
-    setLoading(true);
-    setError(null);
+  const queryKey = ["orders", pagination.pageIndex, pagination.pageSize];
 
-    try {
+  const {
+    data: queryData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey,
+    queryFn: async () => {
       const { response, data: payload } = await getOrders({
-        page: currentPagination.pageIndex + 1,
-        perPage: currentPagination.pageSize,
+        page: pagination.pageIndex + 1,
+        perPage: pagination.pageSize,
       });
 
       if (!response.ok) {
         const msg = payload?.message || "Data failed to load.";
-        setError(msg);
-        if (!silent) toast.error(msg);
-        return;
+        toast.error(msg);
+        throw new Error(msg);
       }
 
-      // Set the data
-      setData(payload.data || []);
+      if (payload?.message) toast.success(payload.message);
 
-      // Update pagination with metadata from API response
-      setPagination({
-        pageIndex: payload.pagination.current_page - 1,
-        pageSize: payload.pagination.per_page,
-        pageCount: payload.pagination.last_page,
-      });
+      return payload;
+    },
+    keepPreviousData: true,
+    retry: false,
+  });
 
-      if (!silent && payload?.message) toast.success(payload.message);
-    } catch {
-      const msg = "Unexpected error.";
-      setError(msg);
-      if (!silent) toast.error(msg);
-    } finally {
-      setLoading(false);
+  // sync pagination when new data arrives
+  useEffect(() => {
+    if (queryData?.pagination) {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: queryData.pagination.current_page - 1,
+        pageSize: queryData.pagination.per_page,
+        pageCount: queryData.pagination.last_page,
+      }));
     }
-  }, []);
+  }, [queryData]);
 
+  // maintain page ref for imperative fetching
   const pageRef = useRef(pagination);
   useEffect(() => {
     pageRef.current = pagination;
   }, [pagination]);
 
   const fetchLatest = useCallback(
-    (silent = false) => fetchData(pageRef.current, silent),
-    [fetchData]
+    async (silent = false) => {
+      const res = await refetch({ cancelRefetch: false });
+      if (!silent && res.error) {
+        toast.error(res.error.message || "Unexpected error.");
+      }
+      return res;
+    },
+    [refetch]
   );
-
-  useEffect(() => {
-    fetchLatest();
-  }, [pagination.pageIndex, pagination.pageSize]);
 
   const refreshData = useCallback(() => fetchLatest(true), [fetchLatest]);
 
   return {
-    data,
-    loading,
-    error,
+    data: queryData?.data || [],
+    loading: isLoading,
+    error: isError ? error?.message || "Unexpected error." : null,
     pagination,
     setPagination,
     refreshData,

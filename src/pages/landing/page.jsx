@@ -1,7 +1,20 @@
-export default function LandingPage() {
+import HeroSection from "./sections/hero-section";
+import ServicesSection from "./sections/services-section";
+import ProductSection from "./sections/product-section";
+
+const LandingPage = () => {
   return (
-    <div className="text-foreground bg-background min-h-screen flex-1 flex items-center justify-center text-xl">
-      Ini harusnya landing page
+    <div className="container lg:px-4 w-full">
+      {/* Hero Section */}
+      <HeroSection />
+
+      {/* Services Section */}
+      <ServicesSection />
+
+      {/* Produk Section */}
+      <ProductSection />
     </div>
   );
-}
+};
+
+export default LandingPage;

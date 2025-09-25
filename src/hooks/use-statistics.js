@@ -1,11 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
 import * as stats from "@/api-services/statistics.service";
+import { useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export function useStatistics({ type = "overview" }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const getStats = (type) => {
     switch (type) {
       case "overview":
@@ -27,25 +24,33 @@ export function useStatistics({ type = "overview" }) {
     }
   };
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
+  const {
+    data: queryData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["statistics", type],
+    queryFn: async () => {
       const statsFn = getStats(type);
       const { response, data: payload } = await statsFn();
-      if (!response.ok)
+
+      if (!response.ok) {
         throw new Error(payload?.message || "Failed to load statistics");
-      setData(payload.data || null);
-    } catch (e) {
-      setError(e.message || "Unexpected error.");
-    } finally {
-      setLoading(false);
-    }
-  }, [type]);
+      }
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+      return payload;
+    },
+    retry: false,
+  });
 
-  return { data, loading, error, fetchLatest: fetchData };
+  const fetchLatest = useCallback(() => refetch(), [refetch]);
+
+  return {
+    data: queryData?.data || null,
+    loading: isLoading,
+    error: isError ? error?.message || "Unexpected error." : null,
+    fetchLatest,
+  };
 }

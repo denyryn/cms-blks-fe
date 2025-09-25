@@ -1,78 +1,132 @@
-import { getProducts } from "@/api-services/products.service";
-import { useCallback, useState, useRef, useEffect } from "react";
+import { getProducts, getProduct } from "@/api-services/products.service";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useProducts(initialPageIndex = 0, initialPageSize = 15) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export function useProducts(
+  initialPageIndex = 0,
+  initialPageSize = 15,
+  sort = null,
+  categoryId = null
+) {
   const [pagination, setPagination] = useState({
     pageIndex: initialPageIndex,
     pageSize: initialPageSize,
-    pageCount: -1, // -1 indicates unknown page count initially
+    pageCount: -1,
   });
 
-  const fetchData = useCallback(async (currentPagination, silent = false) => {
-    setLoading(true);
-    setError(null);
+  const queryClient = useQueryClient();
 
-    try {
-      // Convert 0-based pageIndex to 1-based page for API
+  const queryKey = [
+    "products",
+    pagination.pageIndex,
+    pagination.pageSize,
+    sort,
+    categoryId,
+  ];
+
+  const {
+    data: queryData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey,
+    queryFn: async () => {
       const { response, data: payload } = await getProducts({
-        page: currentPagination.pageIndex + 1,
-        perPage: currentPagination.pageSize,
+        page: pagination.pageIndex + 1,
+        perPage: pagination.pageSize,
+        sort: sort,
+        category_id: categoryId,
       });
 
       if (!response.ok) {
         const msg = payload?.message || "Data failed to load.";
-        setError(msg);
-        if (!silent) toast.error(msg);
-        return;
+        toast.error(msg);
+        throw new Error(msg);
       }
 
-      // Set the data
-      setData(payload.data || []);
+      if (payload?.message) toast.success(payload.message);
 
-      // Update pagination with metadata from API response
-      setPagination({
-        pageIndex: payload.pagination.current_page - 1,
-        pageSize: payload.pagination.per_page,
-        pageCount: payload.pagination.last_page,
-      });
+      return payload;
+    },
+    keepPreviousData: true, // Smooth pagination
+    retry: false, // Avoid infinite retries if API consistently fails
+  });
 
-      if (!silent && payload?.message) toast.success(payload.message);
-    } catch (err) {
-      const msg = "Unexpected error.";
-      setError(msg);
-      if (!silent) toast.error(msg);
-    } finally {
-      setLoading(false);
+  // Sync pagination when data comes back
+  useEffect(() => {
+    if (queryData?.pagination) {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: queryData.pagination.current_page - 1,
+        pageSize: queryData.pagination.per_page,
+        pageCount: queryData.pagination.last_page,
+      }));
     }
-  }, []);
+  }, [queryData]);
 
   const pageRef = useRef(pagination);
   useEffect(() => {
     pageRef.current = pagination;
   }, [pagination]);
 
+  // Keep same API as before
   const fetchLatest = useCallback(
-    (silent = false) => fetchData(pageRef.current, silent),
-    [fetchData]
+    async (silent = false) => {
+      const res = await refetch({ cancelRefetch: false });
+      if (!silent && res.error) {
+        toast.error(res.error.message || "Unexpected error.");
+      }
+      return res;
+    },
+    [refetch]
   );
-
-  useEffect(() => {
-    fetchLatest();
-  }, [pagination.pageIndex, pagination.pageSize]);
 
   const refreshData = useCallback(() => fetchLatest(true), [fetchLatest]);
 
   return {
-    data,
-    loading,
-    error,
+    data: queryData?.data || [],
+    loading: isLoading,
+    error: isError ? error?.message || "Unexpected error." : null,
     pagination,
     setPagination,
     refreshData,
     fetchLatest,
+  };
+}
+
+export function useProduct(id) {
+  const {
+    data: queryData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["product", id],
+    queryFn: async () => {
+      if (!id) return null;
+
+      const { response, data: payload } = await getProduct(id);
+
+      if (!response.ok) {
+        const msg = payload?.message || "Product failed to load.";
+        toast.error(msg);
+        throw new Error(msg);
+      }
+
+      return payload?.data || payload;
+    },
+    enabled: !!id, // Only run query if id exists
+    retry: false,
+  });
+
+  return {
+    data: queryData,
+    loading: isLoading,
+    error: isError ? error?.message || "Unexpected error." : null,
+    refetch,
   };
 }
