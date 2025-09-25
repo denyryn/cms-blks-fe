@@ -114,6 +114,17 @@ const Navbar = () => {
               <span className="sr-only">Keranjang Belanja</span>
             </Button>
 
+            {/* User Profile Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-muted"
+              onClick={() => navigate("/user")}
+            >
+              <User className="h-5 w-5" />
+              <span className="sr-only">Profil Pengguna</span>
+            </Button>
+
             {/* Authentication Actions */}
             {isAuthenticated ? (
               /* User Profile Dropdown */
@@ -247,6 +258,16 @@ const Navbar = () => {
                       {cartItemsCount}
                     </Badge>
                   )}
+                </Link>
+
+                {/* Mobile User Profile Link */}
+                <Link
+                  to="/user"
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-3 px-3 py-2 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Profil Pengguna</span>
                 </Link>
               </div>
 

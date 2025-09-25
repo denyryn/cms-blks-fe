@@ -40,55 +40,19 @@ import {
   Camera,
   Save,
   X,
+  LogOut,
 } from "lucide-react";
 
 export default function UserPage() {
-  const { user: authUser, loading: authLoading, isAuthenticated } = useAuth();
+  const {
+    user: authUser,
+    loading: authLoading,
+    isAuthenticated,
+    logout,
+  } = useAuth();
   const navigate = useNavigate();
 
-  // Show loading spinner while auth is loading
-  if (authLoading) {
-    return (
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-          <div className="mb-6">
-            <User className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              Akses Terbatas
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              Anda perlu masuk untuk mengakses halaman profil
-            </p>
-          </div>
-          <div className="space-x-4">
-            <Button onClick={() => navigate("/auth/login")} size="lg">
-              Masuk ke Akun
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/auth/register")}
-              size="lg"
-            >
-              Daftar Akun Baru
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Use real user data from auth context
+  // Initialize all state hooks BEFORE any conditional logic
   const [user, setUser] = useState({
     id: authUser?.id || 1,
     name: authUser?.name || "User",
@@ -151,6 +115,48 @@ export default function UserPage() {
     isDefault: false,
   });
 
+  // Show loading spinner while auth is loading
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-6 py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto px-6 py-8">
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+          <div className="mb-6">
+            <User className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              Akses Terbatas
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Anda perlu masuk untuk mengakses halaman profil
+            </p>
+          </div>
+          <div className="space-x-4">
+            <Button onClick={() => navigate("/auth/login")} size="lg">
+              Masuk ke Akun
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/auth/register")}
+              size="lg"
+            >
+              Daftar Akun Baru
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleSaveProfile = () => {
     setUser(editedUser);
     setIsEditingProfile(false);
@@ -212,6 +218,15 @@ export default function UserPage() {
           handleSetDefaultAddress(remainingAddresses[0].id);
         }, 0);
       }
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
@@ -756,6 +771,14 @@ export default function UserPage() {
               <Button variant="outline" className="w-full justify-start">
                 <User className="h-4 w-4 mr-2" />
                 Ubah Profil
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Keluar
               </Button>
             </CardContent>
           </Card>
